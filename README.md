@@ -1,110 +1,207 @@
-🏥 MediSuiv
+# 🩺 MediSuiv
 
-🔗 Repository : https://github.com/Arij-Mhjb/Medisuiv.git
+**MediSuiv** is an intelligent **post-hospitalization patient monitoring platform** built with a **microservices architecture**.
+The platform enables healthcare providers to **remotely monitor patients after hospital discharge** through the continuous collection of vital signs using connected medical devices.
 
-📌 Description
+The system helps doctors detect potential health risks early and ensures continuous medical follow-up.
 
-MediSuiv est une plateforme intelligente de suivi post-hospitalier basée sur une architecture microservices.
-Elle permet de surveiller à distance les patients après leur sortie d’hôpital grâce à la collecte continue de leurs paramètres vitaux via des objets connectés.
+---
 
-🎯 Objectif :
--Réduire les complications post-hospitalières
--Éviter les ré-hospitalisations
--Améliorer la qualité du suivi médical
+# 📌 Project Repository
 
-🏗 Architecture :
-L’application est basée sur une architecture Microservices avec :
+GitHub:
+https://github.com/Arij-Mhjb/Medisuiv.git
 
-🔹 Backend : Spring Boot (microservices)
+---
 
-🔹 Microservice Analytics : Node.js
+# 🎯 Project Objectives
 
-🔹 Frontend : React
+* Monitor patients remotely after hospital discharge
+* Collect and analyze patient vital signs continuously
+* Improve communication between doctors and patients
+* Detect abnormal health indicators and trigger alerts
+* Provide doctors with dashboards and reports for decision making
 
-🔹 Bases de données : MySQL, H2, MongoDB
+---
 
-👥 Équipe & Répartition des Microservices
-🔐 Gestion des utilisateurs
+# 🏗 System Architecture
 
-👤 Nizar Chaieb
-Base de données : MySQL
-Entités : Utilisateur, Rôle
+MediSuiv is built using a **microservices architecture** to ensure scalability, flexibility, and independent service management.
 
-🏥 Suivi des patients
-👤 Arij Mahjoub
-Base de données : H2
-Entités : Patient, DossierMédical
+Main technologies used:
 
-❤️ Paramètres vitaux & services médicaux
-👤 Walaeddine Riahi
-Base de données : H2
-Entités : ParametreVital, Symptome
-🚨 Alertes et notifications
+* **Frontend:** React
+* **Backend:** Node.js
+* **Reporting & Analysis:** MongoDB
+* **Databases:** MySQL & H2
 
-👤 Ons Jaouadi
-Base de données : H2
-Entités : Alerte, Notification
+Each service manages a specific domain of the platform.
 
-📋 Questionnaires & Dashboards
-👤 Eya Nefzi
-Base de données : MySQL
-Entités : Questionnaire, Question, Réponse
+---
 
-📊 Microservice Avancé : Analytics & Reporting Global
+# ⚙️ Microservices
 
-👥 Toute l’équipe
-Technologie : Node.js
-Base de données : MongoDB
-Fonction : Analyse des données et génération de rapports statistiques globaux
+## 1️⃣ User Management Service
 
-🛠 Technologies utilisées
+**Database:** MySQL
 
-Java 17
-React.js
-Node.js
-MySQL
-H2 Database
-MongoDB
-REST APIs
+Responsible for authentication and role management.
 
-🚀 Fonctionnalités principales
+Entities:
 
-Authentification multi-rôles
+* Utilisateur (User)
+* Rôle (Role)
 
-Gestion des profils patients
+Features:
 
-Enregistrement des paramètres vitaux
+* User registration and authentication
+* Role management (Admin, Doctor, Patient)
+* Access control
 
-Détection des anomalies et alertes
+---
 
-Questionnaires de suivi
+## 2️⃣ Patient Monitoring Service
 
-Tableaux de bord statistiques
+**Database:** H2
 
-Analyse globale des données
+Handles patient medical monitoring.
 
-▶️ Lancer le projet
+Entities:
 
-Cloner le repository:
-git clone https://github.com/Arij-Mhjb/Medisuiv.git
+* Patient
+* DossierMedical (Medical Record)
 
-Lancer chaque microservice Spring Boot:
-mvn spring-boot:run
+Features:
 
-Lancer le microservice Analytics (Node.js):
-npm install
-npm start
+* Patient registration
+* Medical record management
+* Patient follow-up after hospital discharge
 
-Lancer le Frontend React:
+---
 
-npm install
-npm start
+## 3️⃣ Vital Signs & Medical Services
 
-📌 Auteur
-Projet académique réalisé par :
+**Database:** H2
 
-Nizar Chaieb
-Walaeddine Riahi
-Arij Mahjoub
-Ons Jaouadi
-Eya Nefzi
+Responsible for collecting and managing patient vital signs.
+
+Entities:
+
+* ParametreVital (Vital Sign)
+* Symptome (Symptom)
+
+Examples of tracked parameters:
+
+* Blood pressure
+* Heart rate
+* Temperature
+* Blood glucose
+* Oxygen saturation
+* Weight
+
+---
+
+## 4️⃣ Alerts & Notifications Service
+
+**Database:** H2
+
+Detects abnormal values and notifies healthcare professionals.
+
+Entities:
+
+* Alerte
+* Notification
+
+Features:
+
+* Automatic alerts for abnormal vital signs
+* Notification system for doctors and patients
+
+---
+
+## 5️⃣ Questionnaires & Dashboards
+
+**Database:** MySQL
+
+Provides reporting and medical evaluation tools.
+
+Entities:
+
+* Questionnaire
+* Question
+* Réponse
+
+Features:
+
+* Patient health questionnaires
+* Medical surveys
+* Monitoring dashboards
+
+---
+
+# 📊 Global Analysis & Reporting
+
+MediSuiv integrates **MongoDB** for advanced analytics and reporting:
+
+* Patient health data analysis
+* Medical dashboards
+* Trend visualization
+* Population health insights
+
+---
+
+# 🖥 Frontend
+
+**Technology:** React
+
+Main interfaces include:
+
+* Patient dashboard
+* Doctor monitoring panel
+* Vital signs tracking
+* Alerts and notifications
+* Health questionnaires
+
+---
+
+# 🔐 Security Features
+
+* Role-based authentication
+* Secure API communication
+* Protected medical data access
+* Controlled doctor–patient assignment
+
+---
+
+# 🚀 Future Improvements
+
+* Integration with wearable health devices
+* AI-based health prediction
+* Telemedicine video consultations
+* Mobile application (React Native / Flutter)
+* Advanced analytics and machine learning
+
+---
+
+# 👩‍⚕️ Target Users
+
+* Hospitals
+* Doctors
+* Post-hospitalization patients
+* Telemedicine platforms
+* Healthcare monitoring services
+
+---
+
+# 📄 License
+
+This project is intended for **research and educational purposes** in healthcare technology.
+
+---
+
+# 💡 Project Name Meaning
+
+**MediSuiv** =
+**Medical + Suivi (French for monitoring / follow-up)**
+
+The platform focuses on **continuous patient follow-up after hospitalization**.
