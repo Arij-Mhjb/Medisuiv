@@ -62,7 +62,7 @@ Features:
 
 ## 2️⃣ Patient Monitoring Service
 
-**Database:** H2
+**Database:** MySql
 
 Handles patient medical monitoring.
 
@@ -81,7 +81,7 @@ Features:
 
 ## 3️⃣ Vital Signs & Medical Services
 
-**Database:** H2
+**Database:** Mysql
 
 Responsible for collecting and managing patient vital signs.
 
