@@ -1,0 +1,59 @@
+services:
+
+  rabbitmq:
+    image: rabbitmq:management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+  eureka-server:
+    build:
+      context: ./eureka-server
+    ports:
+      - "8761:8761"
+    environment:
+      - EUREKA_CLIENT_SERVICE-URL_DEFAULTZONE=http://eureka-server:8761/eureka/
+
+  config-server:
+    build:
+      context: ./config-server
+    ports:
+      - "8888:8888"
+    depends_on:
+      - eureka-server
+
+  alertes-service:
+    build:
+      context: ./alertes-service
+    ports:
+      - "8084:8084"
+    environment:
+      - EUREKA_CLIENT_SERVICE-URL_DEFAULTZONE=http://eureka-server:8761/eureka/
+      - SPRING_RABBITMQ_HOST=rabbitmq
+    depends_on:
+      - eureka-server
+      - config-server
+      - rabbitmq
+
+  api-gateway:
+    build:
+      context: ./api-gateway
+    ports:
+      - "8080:8080"
+    environment:
+      - EUREKA_CLIENT_SERVICE-URL_DEFAULTZONE=http://eureka-server:8761/eureka/
+    depends_on:
+      - eureka-server
+      - alertes-service
+
+  frontend:
+    build:
+      context: .
+      args:
+        - API_URL=http://api-gateway:8080
+    ports:
+      - "5173:3000"
+    environment:
+      - API_URL=http://api-gateway:8080
+    depends_on:
+      - api-gateway
