@@ -1,0 +1,176 @@
+{
+  "info": {
+    "name": "MediSuiv - Validation",
+    "_postman_id": "5d9f20d9-5dd0-4ea9-87dc-2a88c1b0a100",
+    "description": "Collection de validation MediSuiv via API Gateway uniquement.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8080"
+    },
+    {
+      "key": "questionnaire_id",
+      "value": "1"
+    },
+    {
+      "key": "question_1_id",
+      "value": "1"
+    },
+    {
+      "key": "question_2_id",
+      "value": "2"
+    },
+    {
+      "key": "question_3_id",
+      "value": "3"
+    }
+  ],
+  "item": [
+    {
+      "name": "Questionnaires CRUD",
+      "item": [
+        {
+          "name": "Create questionnaire",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Suivi post-hospitalisation cardiaque\",\n  \"description\": \"Questionnaire de suivi quotidien pour patients apres sortie.\",\n  \"targetRole\": \"PATIENT\",\n  \"status\": \"ACTIVE\",\n  \"questions\": [\n    {\n      \"text\": \"Comment evaluez-vous votre douleur aujourd'hui ?\",\n      \"type\": \"TEXT\",\n      \"required\": true,\n      \"position\": 1\n    },\n    {\n      \"text\": \"Avez-vous pris votre traitement aujourd'hui ?\",\n      \"type\": \"BOOLEAN\",\n      \"required\": true,\n      \"position\": 2\n    },\n    {\n      \"text\": \"Indiquez votre niveau de fatigue sur 10.\",\n      \"type\": \"NUMBER\",\n      \"required\": true,\n      \"position\": 3\n    }\n  ]\n}"
+            },
+            "url": "{{base_url}}/questionnaires/api/questionnaires"
+          }
+        },
+        {
+          "name": "List questionnaires",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/questionnaires/api/questionnaires"
+          }
+        },
+        {
+          "name": "Get questionnaire by id",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/questionnaires/api/questionnaires/{{questionnaire_id}}"
+          }
+        },
+        {
+          "name": "Update questionnaire",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Suivi post-hospitalisation mis a jour\",\n  \"description\": \"Version modifiee pour la demonstration finale.\",\n  \"targetRole\": \"PATIENT\",\n  \"status\": \"ACTIVE\",\n  \"questions\": [\n    {\n      \"text\": \"Avez-vous ressenti un essoufflement aujourd'hui ?\",\n      \"type\": \"BOOLEAN\",\n      \"required\": true,\n      \"position\": 1\n    },\n    {\n      \"text\": \"Donnez votre niveau de douleur sur 10.\",\n      \"type\": \"NUMBER\",\n      \"required\": true,\n      \"position\": 2\n    },\n    {\n      \"text\": \"Avez-vous suivi les consignes du medecin ?\",\n      \"type\": \"BOOLEAN\",\n      \"required\": true,\n      \"position\": 3\n    }\n  ]\n}"
+            },
+            "url": "{{base_url}}/questionnaires/api/questionnaires/{{questionnaire_id}}"
+          }
+        },
+        {
+          "name": "Delete questionnaire",
+          "request": {
+            "method": "DELETE",
+            "url": "{{base_url}}/questionnaires/api/questionnaires/{{questionnaire_id}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Questionnaires Metier",
+      "item": [
+        {
+          "name": "Submit patient responses",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"patientId\": \"PATIENT-001\",\n  \"responses\": [\n    {\n      \"questionId\": {{question_1_id}},\n      \"answerText\": \"Douleur legere au thorax\",\n      \"score\": 2\n    },\n    {\n      \"questionId\": {{question_2_id}},\n      \"answerText\": \"Oui\",\n      \"score\": 1\n    },\n    {\n      \"questionId\": {{question_3_id}},\n      \"answerText\": \"4\",\n      \"score\": 4\n    }\n  ]\n}"
+            },
+            "url": "{{base_url}}/questionnaires/api/questionnaires/{{questionnaire_id}}/responses"
+          }
+        },
+        {
+          "name": "Questionnaires stats overview",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/questionnaires/api/questionnaires/stats/overview"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Dashboards",
+      "item": [
+        {
+          "name": "Dashboard live overview",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/dashboards/api/dashboards/overview"
+          }
+        },
+        {
+          "name": "Create dashboard snapshot",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/dashboards/api/dashboards/snapshots"
+          }
+        },
+        {
+          "name": "List dashboard snapshots",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/dashboards/api/dashboards/snapshots"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Tests erreurs",
+      "item": [
+        {
+          "name": "Get unknown questionnaire",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/questionnaires/api/questionnaires/999"
+          }
+        },
+        {
+          "name": "Submit invalid question response",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"patientId\": \"PATIENT-002\",\n  \"responses\": [\n    {\n      \"questionId\": 999,\n      \"answerText\": \"Test invalide\",\n      \"score\": 0\n    }\n  ]\n}"
+            },
+            "url": "{{base_url}}/questionnaires/api/questionnaires/{{questionnaire_id}}/responses"
+          }
+        }
+      ]
+    }
+  ]
+}
