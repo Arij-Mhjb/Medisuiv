@@ -1,207 +1,52 @@
-# 🩺 MediSuiv
+# MediSuiv Backend
 
-**MediSuiv** is an intelligent **post-hospitalization patient monitoring platform** built with a **microservices architecture**.
-The platform enables healthcare providers to **remotely monitor patients after hospital discharge** through the continuous collection of vital signs using connected medical devices.
+Backend microservices for the `Questionnaires & Dashboards` domain of MediSuiv.
 
-The system helps doctors detect potential health risks early and ensures continuous medical follow-up.
+## Services
 
----
+- `eureka-server`: service discovery
+- `config-server`: centralized configuration with native files
+- `api-gateway`: single exposed entry point
+- `questionnaires-service`: MySQL service for questionnaires, questions, responses, update, and delete
+- `dashboards-service`: MongoDB analytics service with OpenFeign calls to `questionnaires-service`
 
-# 📌 Project Repository
+## Architecture rules covered
 
-GitHub:
-https://github.com/Arij-Mhjb/Medisuiv.git
+- All services are configured to register in Eureka
+- Routing is exposed through `api-gateway`
+- `dashboards-service` communicates with `questionnaires-service` through OpenFeign
 
----
+## Default ports
 
-# 🎯 Project Objectives
+- `8761`: Eureka
+- `8888`: Config Server
+- `8080`: API Gateway
+- `8085`: Questionnaires Service
+- `8086`: Dashboards Service
 
-* Monitor patients remotely after hospital discharge
-* Collect and analyze patient vital signs continuously
-* Improve communication between doctors and patients
-* Detect abnormal health indicators and trigger alerts
-* Provide doctors with dashboards and reports for decision making
+## Run order
 
----
+1. Start MySQL and MongoDB
+2. Start `eureka-server`
+3. Start `config-server`
+4. Start `questionnaires-service`
+5. Start `dashboards-service`
+6. Start `api-gateway`
 
-# 🏗 System Architecture
+## Example gateway URLs
 
-MediSuiv is built using a **microservices architecture** to ensure scalability, flexibility, and independent service management.
+- `GET /questionnaires/api/questionnaires`
+- `POST /questionnaires/api/questionnaires`
+- `PUT /questionnaires/api/questionnaires/{id}`
+- `DELETE /questionnaires/api/questionnaires/{id}`
+- `POST /questionnaires/api/questionnaires/{id}/responses`
+- `GET /dashboards/api/dashboards/overview`
+- `POST /dashboards/api/dashboards/snapshots`
 
-Main technologies used:
+## Databases
 
-* **Frontend:** React
-* **Backend:** Node.js
-* **Reporting & Analysis:** MongoDB
-* **Databases:** MySQL & H2
+Use the included `docker-compose.yml` to bootstrap local MySQL and MongoDB.
 
-Each service manages a specific domain of the platform.
+## Postman
 
----
-
-# ⚙️ Microservices
-
-## 1️⃣ User Management Service
-
-**Database:** MySQL
-
-Responsible for authentication and role management.
-
-Entities:
-
-* Utilisateur (User)
-* Rôle (Role)
-
-Features:
-
-* User registration and authentication
-* Role management (Admin, Doctor, Patient)
-* Access control
-
----
-
-## 2️⃣ Patient Monitoring Service
-
-**Database:** MySql
-
-Handles patient medical monitoring.
-
-Entities:
-
-* Patient
-* DossierMedical (Medical Record)
-
-Features:
-
-* Patient registration
-* Medical record management
-* Patient follow-up after hospital discharge
-
----
-
-## 3️⃣ Vital Signs & Medical Services
-
-**Database:** Mysql
-
-Responsible for collecting and managing patient vital signs.
-
-Entities:
-
-* ParametreVital (Vital Sign)
-* Symptome (Symptom)
-
-Examples of tracked parameters:
-
-* Blood pressure
-* Heart rate
-* Temperature
-* Blood glucose
-* Oxygen saturation
-* Weight
-
----
-
-## 4️⃣ Alerts & Notifications Service
-
-**Database:** H2
-
-Detects abnormal values and notifies healthcare professionals.
-
-Entities:
-
-* Alerte
-* Notification
-
-Features:
-
-* Automatic alerts for abnormal vital signs
-* Notification system for doctors and patients
-
----
-
-## 5️⃣ Questionnaires & Dashboards
-
-**Database:** MySQL
-
-Provides reporting and medical evaluation tools.
-
-Entities:
-
-* Questionnaire
-* Question
-* Réponse
-
-Features:
-
-* Patient health questionnaires
-* Medical surveys
-* Monitoring dashboards
-
----
-
-# 📊 Global Analysis & Reporting
-
-MediSuiv integrates **MongoDB** for advanced analytics and reporting:
-
-* Patient health data analysis
-* Medical dashboards
-* Trend visualization
-* Population health insights
-
----
-
-# 🖥 Frontend
-
-**Technology:** React
-
-Main interfaces include:
-
-* Patient dashboard
-* Doctor monitoring panel
-* Vital signs tracking
-* Alerts and notifications
-* Health questionnaires
-
----
-
-# 🔐 Security Features
-
-* Role-based authentication
-* Secure API communication
-* Protected medical data access
-* Controlled doctor–patient assignment
-
----
-
-# 🚀 Future Improvements
-
-* Integration with wearable health devices
-* AI-based health prediction
-* Telemedicine video consultations
-* Mobile application (React Native / Flutter)
-* Advanced analytics and machine learning
-
----
-
-# 👩‍⚕️ Target Users
-
-* Hospitals
-* Doctors
-* Post-hospitalization patients
-* Telemedicine platforms
-* Healthcare monitoring services
-
----
-
-# 📄 License
-
-This project is intended for **research and educational purposes** in healthcare technology.
-
----
-
-# 💡 Project Name Meaning
-
-**MediSuiv** =
-**Medical + Suivi (French for monitoring / follow-up)**
-
-The platform focuses on **continuous patient follow-up after hospitalization**.
+Import `MediSuiv-Validation.postman_collection.json` and execute every request through the API Gateway only.
