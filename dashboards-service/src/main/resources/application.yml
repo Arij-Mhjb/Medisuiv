@@ -9,6 +9,16 @@ spring:
   data:
     mongodb:
       uri: mongodb://localhost:27017/medisuiv_dashboards
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8087/realms/medisuiv-realm
 
 eureka:
   client:
@@ -19,4 +29,10 @@ management:
   endpoints:
     web:
       exposure:
-        include: health,info
+        include: health,info,prometheus
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html

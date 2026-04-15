@@ -23,12 +23,23 @@ public class DataInitializer {
             questionnaireService.createQuestionnaire(new CreateQuestionnaireRequest(
                     "Suivi post-hospitalisation",
                     "Questionnaire quotidien pour evaluer l'etat du patient apres sortie.",
-                    "PATIENT",
-                    "ACTIVE",
+                    "DOCTOR",
+                    "PUBLISHED",
                     List.of(
                             new QuestionDefinitionRequest("Comment evaluez-vous votre douleur aujourd'hui ?", "TEXT", true, 1),
                             new QuestionDefinitionRequest("Avez-vous pris votre traitement aujourd'hui ?", "BOOLEAN", true, 2),
                             new QuestionDefinitionRequest("Indiquez votre niveau de fatigue sur 10.", "NUMBER", true, 3)
+                    )
+            ));
+
+            questionnaireService.createQuestionnaire(new CreateQuestionnaireRequest(
+                    "Controle diabetologie",
+                    "Questionnaire hebdomadaire pour les patients diabetiques.",
+                    "DOCTOR",
+                    "PUBLISHED",
+                    List.of(
+                            new QuestionDefinitionRequest("Votre glycemie moyenne cette semaine ?", "NUMBER", true, 1),
+                            new QuestionDefinitionRequest("Avez-vous respecte le regime alimentaire ?", "BOOLEAN", true, 2)
                     )
             ));
         };

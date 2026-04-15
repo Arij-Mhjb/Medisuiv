@@ -1,0 +1,43 @@
+{
+  "realm": "medisuiv-realm",
+  "enabled": true,
+  "displayName": "MediSuiv",
+  "loginTheme": "medisuiv",
+  "roles": {
+    "realm": [
+      { "name": "ADMIN" },
+      { "name": "DOCTOR" },
+      { "name": "ANALYST" }
+    ]
+  },
+  "clients": [
+    {
+      "clientId": "medisuiv-gateway",
+      "publicClient": true,
+      "directAccessGrantsEnabled": true,
+      "standardFlowEnabled": true,
+      "redirectUris": ["http://localhost:8080/*"],
+      "webOrigins": ["*"]
+    }
+  ],
+  "users": [
+    {
+      "username": "admin-ms",
+      "enabled": true,
+      "credentials": [{ "type": "password", "value": "admin123", "temporary": false }],
+      "realmRoles": ["ADMIN"]
+    },
+    {
+      "username": "doctor-ms",
+      "enabled": true,
+      "credentials": [{ "type": "password", "value": "doctor123", "temporary": false }],
+      "realmRoles": ["DOCTOR"]
+    },
+    {
+      "username": "analyst-ms",
+      "enabled": true,
+      "credentials": [{ "type": "password", "value": "analyst123", "temporary": false }],
+      "realmRoles": ["ANALYST"]
+    }
+  ]
+}

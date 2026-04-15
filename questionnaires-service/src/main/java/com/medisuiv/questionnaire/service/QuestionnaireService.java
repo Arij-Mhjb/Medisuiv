@@ -4,6 +4,8 @@ import com.medisuiv.questionnaire.dto.CreateQuestionnaireRequest;
 import com.medisuiv.questionnaire.dto.QuestionResponseDto;
 import com.medisuiv.questionnaire.dto.QuestionnaireDetailsResponse;
 import com.medisuiv.questionnaire.dto.QuestionnaireStatsResponse;
+import com.medisuiv.questionnaire.dto.QuestionnaireSummaryResponse;
+import com.medisuiv.questionnaire.dto.ResponseTrendResponse;
 import com.medisuiv.questionnaire.dto.SubmitResponseItemRequest;
 import com.medisuiv.questionnaire.dto.SubmitResponseRequest;
 import com.medisuiv.questionnaire.entity.Question;
@@ -26,6 +28,7 @@ public class QuestionnaireService {
     private final QuestionnaireRepository questionnaireRepository;
     private final QuestionRepository questionRepository;
     private final ReponseRepository reponseRepository;
+    private final MedicalEventPublisher medicalEventPublisher;
 
     @Transactional
     public QuestionnaireDetailsResponse createQuestionnaire(CreateQuestionnaireRequest request) {
@@ -48,6 +51,14 @@ public class QuestionnaireService {
 
         questionnaire.setQuestions(questions);
         Questionnaire saved = questionnaireRepository.save(questionnaire);
+        medicalEventPublisher.publish(
+                "questionnaire.created",
+                saved.getId(),
+                saved.getTitle(),
+                saved.getTargetRole(),
+                "system-admin",
+                "Questionnaire created with " + questions.size() + " questions"
+        );
         return toDetails(saved);
     }
 
@@ -74,6 +85,14 @@ public class QuestionnaireService {
 
         questionnaire.getQuestions().addAll(updatedQuestions);
         Questionnaire saved = questionnaireRepository.save(questionnaire);
+        medicalEventPublisher.publish(
+                "questionnaire.updated",
+                saved.getId(),
+                saved.getTitle(),
+                saved.getTargetRole(),
+                "system-admin",
+                "Questionnaire updated and republished"
+        );
         return toDetails(saved);
     }
 
@@ -85,9 +104,17 @@ public class QuestionnaireService {
     }
 
     @Transactional(readOnly = true)
-    public List<QuestionnaireDetailsResponse> getAllQuestionnaires() {
-        return questionnaireRepository.findAll().stream()
-                .map(this::toDetails)
+    public List<QuestionnaireSummaryResponse> getQuestionnaires(String status, String targetRole) {
+        List<Questionnaire> questionnaires;
+        if (status != null && !status.isBlank()) {
+            questionnaires = questionnaireRepository.findByStatusIgnoreCase(status);
+        } else if (targetRole != null && !targetRole.isBlank()) {
+            questionnaires = questionnaireRepository.findByTargetRoleIgnoreCase(targetRole);
+        } else {
+            questionnaires = questionnaireRepository.findAll();
+        }
+        return questionnaires.stream()
+                .map(this::toSummary)
                 .toList();
     }
 
@@ -115,6 +142,14 @@ public class QuestionnaireService {
                 .toList();
 
         reponseRepository.saveAll(responses);
+        medicalEventPublisher.publish(
+                "questionnaire.response.submitted",
+                questionnaire.getId(),
+                questionnaire.getTitle(),
+                questionnaire.getTargetRole(),
+                request.patientId(),
+                "Responses submitted: " + responses.size()
+        );
         return toDetails(questionnaire);
     }
 
@@ -132,6 +167,13 @@ public class QuestionnaireService {
                 average,
                 reponseRepository.findLastSubmissionAt()
         );
+    }
+
+    @Transactional(readOnly = true)
+    public List<ResponseTrendResponse> getResponseTrends() {
+        return reponseRepository.countResponsesGroupedByQuestionnaire().stream()
+                .map(this::toTrend)
+                .toList();
     }
 
     private void validateQuestion(SubmitResponseItemRequest item, List<Long> allowedQuestionIds) {
@@ -178,5 +220,23 @@ public class QuestionnaireService {
                         ))
                         .toList()
         );
+    }
+
+    private QuestionnaireSummaryResponse toSummary(Questionnaire questionnaire) {
+        return new QuestionnaireSummaryResponse(
+                questionnaire.getId(),
+                questionnaire.getTitle(),
+                questionnaire.getTargetRole(),
+                questionnaire.getStatus(),
+                reponseRepository.countByQuestionnaireId(questionnaire.getId())
+        );
+    }
+
+    private ResponseTrendResponse toTrend(Object[] row) {
+        Long questionnaireId = ((Number) row[0]).longValue();
+        long totalResponses = ((Number) row[1]).longValue();
+        Questionnaire questionnaire = questionnaireRepository.findById(questionnaireId)
+                .orElseThrow(() -> new EntityNotFoundException("Questionnaire introuvable: " + questionnaireId));
+        return new ResponseTrendResponse(questionnaireId, questionnaire.getTitle(), totalResponses);
     }
 }

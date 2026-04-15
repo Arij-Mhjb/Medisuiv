@@ -2,6 +2,7 @@ package com.medisuiv.questionnaire.repository;
 
 import com.medisuiv.questionnaire.entity.Reponse;
 import java.time.LocalDateTime;
+import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -14,4 +15,12 @@ public interface ReponseRepository extends JpaRepository<Reponse, Long> {
 
     @Query("select max(r.submittedAt) from Reponse r where r.questionnaireId = :questionnaireId")
     LocalDateTime findLastSubmissionAtByQuestionnaireId(Long questionnaireId);
+
+    @Query("""
+            select r.questionnaireId, count(r)
+            from Reponse r
+            group by r.questionnaireId
+            order by count(r) desc
+            """)
+    List<Object[]> countResponsesGroupedByQuestionnaire();
 }

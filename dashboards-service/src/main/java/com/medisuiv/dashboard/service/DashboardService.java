@@ -2,9 +2,15 @@ package com.medisuiv.dashboard.service;
 
 import com.medisuiv.dashboard.client.QuestionnaireClient;
 import com.medisuiv.dashboard.document.DashboardSnapshot;
+import com.medisuiv.dashboard.document.MedicalEventProjection;
+import com.medisuiv.dashboard.dto.DashboardDrillDownResponse;
 import com.medisuiv.dashboard.dto.DashboardOverviewResponse;
+import com.medisuiv.dashboard.dto.QuestionnaireDetailsResponse;
+import com.medisuiv.dashboard.dto.QuestionnaireSummaryResponse;
 import com.medisuiv.dashboard.dto.QuestionnaireStatsResponse;
+import com.medisuiv.dashboard.dto.ResponseTrendResponse;
 import com.medisuiv.dashboard.repository.DashboardSnapshotRepository;
+import com.medisuiv.dashboard.repository.MedicalEventProjectionRepository;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +22,7 @@ public class DashboardService {
 
     private final QuestionnaireClient questionnaireClient;
     private final DashboardSnapshotRepository dashboardSnapshotRepository;
+    private final MedicalEventProjectionRepository eventProjectionRepository;
 
     public DashboardOverviewResponse getLiveOverview() {
         QuestionnaireStatsResponse stats = questionnaireClient.getOverview();
@@ -45,6 +52,26 @@ public class DashboardService {
 
     public List<DashboardSnapshot> getSnapshots() {
         return dashboardSnapshotRepository.findAllByOrderByGeneratedAtDesc();
+    }
+
+    public DashboardDrillDownResponse getDrillDown(Long questionnaireId) {
+        QuestionnaireDetailsResponse details = questionnaireClient.getQuestionnaire(questionnaireId);
+        String recommendation = details.totalResponses() < 3
+                ? "Relancer rapidement les patients pour enrichir les donnees cliniques."
+                : "Maintenir la cadence de collecte et surveiller les cas critiques.";
+        return new DashboardDrillDownResponse(details, recommendation);
+    }
+
+    public List<QuestionnaireSummaryResponse> getPublishedQuestionnaires() {
+        return questionnaireClient.getQuestionnairesByStatus("PUBLISHED");
+    }
+
+    public List<ResponseTrendResponse> getResponseTrends() {
+        return questionnaireClient.getResponseTrends();
+    }
+
+    public List<MedicalEventProjection> getRecentEvents() {
+        return eventProjectionRepository.findTop10ByOrderByOccurredAtDesc();
     }
 
     private String evaluate(QuestionnaireStatsResponse stats) {

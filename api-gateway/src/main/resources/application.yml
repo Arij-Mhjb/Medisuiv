@@ -6,6 +6,11 @@ spring:
     name: api-gateway
   config:
     import: optional:configserver:http://localhost:8888
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8087/realms/medisuiv-realm
   cloud:
     gateway:
       routes:
@@ -21,6 +26,12 @@ spring:
             - Path=/dashboards/**
           filters:
             - StripPrefix=1
+        - id: notifications-service
+          uri: lb://NOTIFICATIONS-SERVICE
+          predicates:
+            - Path=/notifications/**
+          filters:
+            - StripPrefix=1
 
 eureka:
   client:
@@ -31,4 +42,17 @@ management:
   endpoints:
     web:
       exposure:
-        include: health,info,gateway
+        include: health,info,gateway,prometheus
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    urls:
+      - name: gateway
+        url: /v3/api-docs
+      - name: questionnaires-service
+        url: /questionnaires/v3/api-docs
+      - name: dashboards-service
+        url: /dashboards/v3/api-docs
+      - name: notifications-service
+        url: /notifications/v3/api-docs

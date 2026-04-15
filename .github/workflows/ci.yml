@@ -1,0 +1,27 @@
+name: medisuiv-ci
+
+on:
+  push:
+    branches: ["main", "codex/**"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+      - name: Build all services
+        run: mvn -B clean package -DskipTests
+      - name: Build Docker images
+        run: |
+          docker build -t medisuiv/eureka-server ./eureka-server
+          docker build -t medisuiv/config-server ./config-server
+          docker build -t medisuiv/api-gateway ./api-gateway
+          docker build -t medisuiv/questionnaires-service ./questionnaires-service
+          docker build -t medisuiv/dashboards-service ./dashboards-service
+          docker build -t medisuiv/notifications-service ./notifications-service

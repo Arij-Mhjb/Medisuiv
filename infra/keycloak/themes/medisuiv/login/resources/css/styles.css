@@ -1,0 +1,23 @@
+body {
+  background: linear-gradient(135deg, #082032, #2c394b);
+}
+
+.login-pf body {
+  background: linear-gradient(135deg, #082032, #2c394b);
+}
+
+#kc-header-wrapper {
+  color: #ffcc70;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.card-pf {
+  border-radius: 18px;
+  border-top: 4px solid #ffcc70;
+}
+
+.btn-primary {
+  background: #ff7f50;
+  border-color: #ff7f50;
+}
