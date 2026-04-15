@@ -1,0 +1,20 @@
+#!/bin/sh
+# Copyright 2007-present the original author or authors.
+set -e
+
+MAVEN_PROJECTBASEDIR=${MAVEN_BASEDIR:-.}
+
+cd "$MAVEN_PROJECTBASEDIR" || exit 1
+
+MAVEN_WRAPPER_JAR="${MAVEN_PROJECTBASEDIR}/maven-wrapper.jar"
+MAVEN_PROPERTIES="${MAVEN_PROJECTBASEDIR}/.mvn/wrapper/maven-wrapper.properties"
+
+if [ -r "$MAVEN_PROPERTIES" ]; then
+  . "$MAVEN_PROPERTIES"
+else
+  echo "WARNING: .mvn/wrapper/maven-wrapper.properties not found"
+fi
+
+MAVEN_WRAPPER_LAUNCHER="org.apache.maven.wrapper.MavenWrapperMain"
+
+exec java -classpath "$MAVEN_WRAPPER_JAR" "$MAVEN_WRAPPER_LAUNCHER" "$@"

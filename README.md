@@ -1,52 +1,40 @@
-# MediSuiv Backend
+# Smart Home Dashboard Template – Next.js Admin UI
+#### Preview
 
-Backend microservices for the `Questionnaires & Dashboards` domain of MediSuiv.
+ - [Demo](https://themewagon.github.io/smart-home/)
 
-## Services
+#### Download
+ - [Download from ThemeWagon](https://themewagon.com/themes/smart-home/)
 
-- `eureka-server`: service discovery
-- `config-server`: centralized configuration with native files
-- `api-gateway`: single exposed entry point
-- `questionnaires-service`: MySQL service for questionnaires, questions, responses, update, and delete
-- `dashboards-service`: MongoDB analytics service with OpenFeign calls to `questionnaires-service`
+## Getting Started
 
-## Architecture rules covered
+1. Clone Repository
+```
+git clone https://github.com/themewagon/smart-home.git
+```
+2. Install Dependencies
+```
+npm i
+```
+3. Run the development server:
 
-- All services are configured to register in Eureka
-- Routing is exposed through `api-gateway`
-- `dashboards-service` communicates with `questionnaires-service` through OpenFeign
+```bash
+npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
+```
 
-## Default ports
+## Author 
+```
+Design and code is completely written by CodesCandy and development team. 
+```
 
-- `8761`: Eureka
-- `8888`: Config Server
-- `8080`: API Gateway
-- `8085`: Questionnaires Service
-- `8086`: Dashboards Service
+## License
 
-## Run order
-
-1. Start MySQL and MongoDB
-2. Start `eureka-server`
-3. Start `config-server`
-4. Start `questionnaires-service`
-5. Start `dashboards-service`
-6. Start `api-gateway`
-
-## Example gateway URLs
-
-- `GET /questionnaires/api/questionnaires`
-- `POST /questionnaires/api/questionnaires`
-- `PUT /questionnaires/api/questionnaires/{id}`
-- `DELETE /questionnaires/api/questionnaires/{id}`
-- `POST /questionnaires/api/questionnaires/{id}/responses`
-- `GET /dashboards/api/dashboards/overview`
-- `POST /dashboards/api/dashboards/snapshots`
-
-## Databases
-
-Use the included `docker-compose.yml` to bootstrap local MySQL and MongoDB.
-
-## Postman
-
-Import `MediSuiv-Validation.postman_collection.json` and execute every request through the API Gateway only.
+ - Design and Code is Copyright &copy; <a href="https://github.com/anitaparmar26" target="_blank">Anita Parmar</a> & <a href="https://codescandy.com/" target="_blank">CodesCandy</a>
+ - Licensed cover under [MIT]
+ - Distributed by <a href="https://themewagon.com" target="_blank">ThemeWagon</a>

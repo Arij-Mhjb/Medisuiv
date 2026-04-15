@@ -1,25 +1,81 @@
-version: "3.9"
-
 services:
-  mysql:
-    image: mysql:8.4
-    container_name: medisuiv-mysql
+
+  rabbitmq:
+    image: rabbitmq:management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+  eureka-server:
+    build:
+      context: ./eureka-server
+    ports:
+      - "8761:8761"
     environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: questionnairesdb
-    ports:
-      - "3306:3306"
-    volumes:
-      - mysql_data:/var/lib/mysql
+      - EUREKA_CLIENT_SERVICE-URL_DEFAULTZONE=http://eureka-server:8761/eureka/
 
-  mongo:
-    image: mongo:7
-    container_name: medisuiv-mongo
+  config-server:
+    build:
+      context: ./config-server
     ports:
-      - "27017:27017"
-    volumes:
-      - mongo_data:/data/db
+      - "8888:8888"
+    depends_on:
+      - eureka-server
 
-volumes:
-  mysql_data:
-  mongo_data:
+  alertes-service:
+    build:
+      context: ./alertes-service
+    ports:
+      - "8084:8084"
+    environment:
+      - EUREKA_CLIENT_SERVICE-URL_DEFAULTZONE=http://eureka-server:8761/eureka/
+      - SPRING_RABBITMQ_HOST=rabbitmq
+    depends_on:
+      - eureka-server
+      - config-server
+      - rabbitmq
+
+  patient-service:
+    build:
+      context: ./patient-service
+    ports:
+      - "8081:8081"
+    environment:
+      - EUREKA_CLIENT_SERVICE-URL_DEFAULTZONE=http://eureka-server:8761/eureka/
+    depends_on:
+      - eureka-server
+
+  doctor-service:
+    build:
+      context: ./doctor-service
+    ports:
+      - "8082:8082"
+    environment:
+      - EUREKA_CLIENT_SERVICE-URL_DEFAULTZONE=http://eureka-server:8761/eureka/
+    depends_on:
+      - eureka-server
+
+  api-gateway:
+    build:
+      context: ./api-gateway
+    ports:
+      - "8080:8080"
+    environment:
+      - EUREKA_CLIENT_SERVICE-URL_DEFAULTZONE=http://eureka-server:8761/eureka/
+    depends_on:
+      - eureka-server
+      - alertes-service
+      - patient-service
+      - doctor-service
+
+  frontend:
+    build:
+      context: .
+      args:
+        - API_URL=http://api-gateway:8080
+    ports:
+      - "5173:3000"
+    environment:
+      - API_URL=http://api-gateway:8080
+    depends_on:
+      - api-gateway
