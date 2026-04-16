@@ -16,7 +16,13 @@ interface PatientData {
   assignedDoctorId: number;
 }
 
-export function PatientApprovalStatus({ patientId }: { patientId: number }) {
+export function PatientApprovalStatus({ 
+  patientId,
+  onStatusUpdate
+}: { 
+  patientId: number;
+  onStatusUpdate?: (isApproved: boolean) => void;
+}) {
   const [patient, setPatient] = useState<PatientData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -24,11 +30,19 @@ export function PatientApprovalStatus({ patientId }: { patientId: number }) {
     const fetchPatient = async () => {
       try {
         console.log('Fetching patient data for ID:', patientId);
-        const response = await fetch(`/api/patients/${patientId}`);
+        const response = await fetch(`/api/patients/${patientId}`, {
+          cache: 'no-store',
+          headers: {
+            'Cache-Control': 'no-cache'
+          }
+        });
         if (response.ok) {
           const data = await response.json();
           console.log('Patient data fetched:', data);
           setPatient(data);
+          if (onStatusUpdate) {
+            onStatusUpdate(data.isApproved);
+          }
         } else {
           console.error('Failed to fetch patient:', response.status);
         }

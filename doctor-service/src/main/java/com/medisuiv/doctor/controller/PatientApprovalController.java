@@ -74,9 +74,10 @@ public class PatientApprovalController {
      */
     @PutMapping("/{approvalId}/approve")
     public ResponseEntity<?> approvePatient(@PathVariable Long approvalId,
+                                            @RequestParam Long doctorId,
                                             @RequestParam(required = false) String notes) {
         try {
-            PatientApprovalDTO approval = approvalService.approvePatient(approvalId, notes);
+            PatientApprovalDTO approval = approvalService.approvePatient(approvalId, doctorId, notes);
             return ResponseEntity.ok(approval);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)

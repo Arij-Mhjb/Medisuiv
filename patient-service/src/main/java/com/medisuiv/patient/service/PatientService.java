@@ -30,6 +30,16 @@ public class PatientService {
      * Register a new patient
      */
     public PatientDTO registerPatient(String email, String firstName, String lastName, String phone) {
+        Optional<Patient> existingPatient = patientRepository.findByEmail(email);
+        if (existingPatient.isPresent()) {
+            Patient p = existingPatient.get();
+            p.setFirstName(firstName);
+            p.setLastName(lastName);
+            p.setPhone(phone);
+            patientRepository.save(p);
+            return mapToDTO(p);
+        }
+
         Patient patient = new Patient();
         patient.setEmail(email);
         patient.setFirstName(firstName);
@@ -50,8 +60,12 @@ public class PatientService {
         Patient patient = patientRepository.findById(patientId)
                 .orElseThrow(() -> new RuntimeException("Patient not found"));
 
-        Questionnaire questionnaire = new Questionnaire();
-        questionnaire.setPatient(patient);
+        Questionnaire questionnaire = patient.getQuestionnaire();
+        if (questionnaire == null) {
+            questionnaire = new Questionnaire();
+            questionnaire.setPatient(patient);
+        }
+        
         questionnaire.setSpecialty(specialty);
         questionnaire.setSymptoms(symptoms);
         questionnaire.setMedicalHistory(medicalHistory);
@@ -61,6 +75,11 @@ public class PatientService {
 
         Questionnaire savedQuestionnaire = questionnaireRepository.save(questionnaire);
         patient.setQuestionnaire(questionnaire);
+        
+        // Reset approval if re-submitting
+        patient.setIsApproved(false);
+        patient.setAssignedDoctorId(null);
+        patient.setApprovedByDoctorId(null);
         patientRepository.save(patient);
 
         // Create approval request asynchronously in background thread - don't block response

@@ -50,10 +50,12 @@ export function DoctorVitalSignsReview({ doctorId }: { doctorId: number }) {
 
   const handleReview = async (reviewId: number) => {
     try {
-      const response = await fetch(`/api/vital-signs-review/${reviewId}/review`, {
+      const queryParams = new URLSearchParams({
+        doctorNotes: notes
+      });
+      
+      const response = await fetch(`/api/vital-signs-review/${reviewId}/review?${queryParams.toString()}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ doctorNotes: notes }),
       });
 
       if (response.ok) {
@@ -61,6 +63,9 @@ export function DoctorVitalSignsReview({ doctorId }: { doctorId: number }) {
         setSelectedId(null);
         setNotes('');
         alert('Vital signs reviewed successfully');
+      } else {
+        const err = await response.text();
+        alert('Failed to submit review: ' + err);
       }
     } catch (error) {
       console.error('Error reviewing vital signs:', error);

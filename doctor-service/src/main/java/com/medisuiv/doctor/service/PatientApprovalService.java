@@ -42,14 +42,23 @@ public class PatientApprovalService {
         return mapToDTO(savedApproval);
     }
 
-    /**
-     * Get pending approvals for a doctor
-     */
     public List<PatientApprovalDTO> getPendingApprovalsForDoctor(Long doctorId) {
-        return patientApprovalRepository.findPendingApprovalsByDoctorId(doctorId)
+        List<PatientApprovalDTO> result = new ArrayList<>();
+        
+        // Get approvals specifically assigned to this doctor
+        result.addAll(patientApprovalRepository.findPendingApprovalsByDoctorId(doctorId)
                 .stream()
                 .map(this::mapToDTO)
-                .collect(Collectors.toList());
+                .collect(Collectors.toList()));
+                
+        // Get unassigned approvals so demo doctors can see them
+        result.addAll(patientApprovalRepository.findAll()
+                .stream()
+                .filter(pa -> "PENDING".equals(pa.getStatus()) && (pa.getDoctorId() == null || pa.getDoctorId() == 0))
+                .map(this::mapToDTO)
+                .collect(Collectors.toList()));
+                
+        return result;
     }
 
     /**
@@ -87,11 +96,12 @@ public class PatientApprovalService {
     /**
      * Approve a patient
      */
-    public PatientApprovalDTO approvePatient(Long approvalId, String notes) {
+    public PatientApprovalDTO approvePatient(Long approvalId, Long doctorId, String notes) {
         PatientApproval approval = patientApprovalRepository.findById(approvalId)
                 .orElseThrow(() -> new RuntimeException("Patient approval not found"));
 
         approval.setStatus("APPROVED");
+        approval.setDoctorId(doctorId);
         approval.setApprovedAt(LocalDateTime.now());
         approval.setNotes(notes);
 

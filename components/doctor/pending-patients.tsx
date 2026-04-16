@@ -61,7 +61,7 @@ export function DoctorPendingPatients({ doctorId, specialty }: { doctorId: numbe
   const handleApprove = async (approvalId: number) => {
     setProcessingId(approvalId);
     try {
-      const response = await fetch(`/api/patient-approvals/${approvalId}/approve?notes=Approved%20by%20doctor`, {
+      const response = await fetch(`/api/patient-approvals/${approvalId}/approve?doctorId=${doctorId}&notes=Approved%20by%20doctor`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
       });

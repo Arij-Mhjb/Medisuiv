@@ -7,6 +7,7 @@ import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 import { Suspense } from "react"
 import { Navbar } from "@/components/navbar"
+import { AuthProvider } from "@/components/auth-provider"
 import ButtonDownload from '@/components/button-download';
 
 export const metadata: Metadata = {
@@ -31,14 +32,16 @@ export default function RootLayout({
     >
       <body className="font-sans">
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <div className="relative flex h-screen flex-col">
-            <Navbar />
-            <div className="flex-1 overflow-auto">
-              <Suspense fallback={null}>
-                <main className="flex-1">{children}</main>
-              </Suspense>
+          <AuthProvider>
+            <div className="relative flex h-screen flex-col">
+              <Navbar />
+              <div className="flex-1 overflow-auto">
+                <Suspense fallback={null}>
+                  <main className="flex-1">{children}</main>
+                </Suspense>
+              </div>
             </div>
-          </div>
+          </AuthProvider>
           <Analytics />
         </ThemeProvider>
         <ButtonDownload />

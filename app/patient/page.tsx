@@ -1,18 +1,46 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { PatientSignupQuestionnaire } from '@/components/patient/questionnaire-form';
 import { VitalSignsForm } from '@/components/patient/vital-signs-form';
+import { PatientVitalSignsHistory } from '@/components/patient/vital-signs-history';
 import { PatientApprovalStatus } from '@/components/patient/approval-status';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 export default function PatientPage() {
   const [patientId, setPatientId] = useState<number | null>(null);
+  const [isApproved, setIsApproved] = useState<boolean>(false);
+  const [activeTab, setActiveTab] = useState<string>('questionnaire');
+
+  // Load from localStorage on mount
+  useEffect(() => {
+    const savedPatientId = localStorage.getItem('medisuiv_patient_id');
+    if (savedPatientId) {
+      setPatientId(parseInt(savedPatientId, 10));
+    }
+    const savedTab = localStorage.getItem('medisuiv_active_tab');
+    if (savedTab) {
+      setActiveTab(savedTab);
+    }
+  }, []);
 
   const handlePatientRegistered = (newPatientId: number) => {
     setPatientId(newPatientId);
-    console.log('Patient registered with ID:', newPatientId);
+    localStorage.setItem('medisuiv_patient_id', newPatientId.toString());
+    setActiveTab('status'); // Auto switch to status after registration
+  };
+
+  const handleTabChange = (val: string) => {
+    setActiveTab(val);
+    localStorage.setItem('medisuiv_active_tab', val);
+  };
+
+  const handleStatusUpdate = (approved: boolean) => {
+    setIsApproved(approved);
+    if (approved && activeTab === 'questionnaire') {
+      handleTabChange('vital-signs');
+    }
   };
 
   return (
@@ -25,52 +53,54 @@ export default function PatientPage() {
           </p>
         </div>
 
-        <Tabs defaultValue="questionnaire" className="w-full">
-          <TabsList className="grid w-full grid-cols-4 mb-8">
-            <TabsTrigger value="questionnaire">Questionnaire</TabsTrigger>
+        <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
+          <TabsList className={`grid w-full mb-8 ${isApproved ? 'grid-cols-3' : 'grid-cols-4'}`}>
+            {!isApproved && <TabsTrigger value="questionnaire">Questionnaire</TabsTrigger>}
             <TabsTrigger value="status">Status</TabsTrigger>
             <TabsTrigger value="vital-signs">Vital Signs</TabsTrigger>
             <TabsTrigger value="help">Help</TabsTrigger>
           </TabsList>
 
           {/* Questionnaire Tab */}
-          <TabsContent value="questionnaire" className="space-y-4">
-            <div className="grid gap-4 md:grid-cols-3">
-              <div className="md:col-span-2">
-                <PatientSignupQuestionnaire onPatientRegistered={handlePatientRegistered} />
-              </div>
-              <div className="space-y-4">
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-lg">Step 1: Registration</CardTitle>
-                  </CardHeader>
-                  <CardContent className="text-sm text-gray-600 space-y-2">
-                    <p>✓ Fill your personal information</p>
-                    <p>✓ Select your medical specialty</p>
-                    <p>✓ Describe your symptoms</p>
-                    <p>✓ Include medical history</p>
-                    <p>✓ List current medications</p>
-                  </CardContent>
-                </Card>
+          {!isApproved && (
+            <TabsContent value="questionnaire" className="space-y-4">
+              <div className="grid gap-4 md:grid-cols-3">
+                <div className="md:col-span-2">
+                  <PatientSignupQuestionnaire onPatientRegistered={handlePatientRegistered} />
+                </div>
+                <div className="space-y-4">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="text-lg">Step 1: Registration</CardTitle>
+                    </CardHeader>
+                    <CardContent className="text-sm text-gray-600 space-y-2">
+                      <p>✓ Fill your personal information</p>
+                      <p>✓ Select your medical specialty</p>
+                      <p>✓ Describe your symptoms</p>
+                      <p>✓ Include medical history</p>
+                      <p>✓ List current medications</p>
+                    </CardContent>
+                  </Card>
 
-                <Card className="bg-blue-50">
-                  <CardHeader>
-                    <CardTitle className="text-sm">Next Step</CardTitle>
-                  </CardHeader>
-                  <CardContent className="text-sm">
-                    After submission, a doctor will review your questionnaire. Check your status tab to track approval.
-                  </CardContent>
-                </Card>
+                  <Card className="bg-blue-50">
+                    <CardHeader>
+                      <CardTitle className="text-sm">Next Step</CardTitle>
+                    </CardHeader>
+                    <CardContent className="text-sm">
+                      After submission, a doctor will review your questionnaire. Check your status tab to track approval.
+                    </CardContent>
+                  </Card>
+                </div>
               </div>
-            </div>
-          </TabsContent>
+            </TabsContent>
+          )}
 
           {/* Status Tab */}
           <TabsContent value="status" className="space-y-4">
             <div className="grid gap-4 md:grid-cols-3">
               <div className="md:col-span-2">
                 {patientId ? (
-                  <PatientApprovalStatus patientId={patientId} />
+                  <PatientApprovalStatus patientId={patientId} onStatusUpdate={handleStatusUpdate} />
                 ) : (
                   <Card>
                     <CardHeader>
@@ -109,7 +139,10 @@ export default function PatientPage() {
             <div className="grid gap-4 md:grid-cols-3">
               <div className="md:col-span-2">
                 {patientId ? (
-                  <VitalSignsForm patientId={patientId} />
+                  <>
+                    <VitalSignsForm patientId={patientId} />
+                    <PatientVitalSignsHistory patientId={patientId} />
+                  </>
                 ) : (
                   <Card>
                     <CardHeader>

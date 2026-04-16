@@ -1,10 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { DoctorPendingPatients } from '@/components/doctor/pending-patients';
 import { DoctorVitalSignsReview } from '@/components/doctor/vital-signs-review';
+import { DoctorApprovedPatients } from '@/components/doctor/approved-patients';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -30,6 +31,28 @@ export default function DoctorPage() {
     specialty: '',
     licenseNumber: '',
   });
+
+  useEffect(() => {
+    // Fetch doctor details on mount to get the specialty
+    const fetchDoctorDetails = async () => {
+      try {
+        const response = await fetch(`/api/doctors/${doctorId}`);
+        if (response.ok) {
+          const data = await response.json();
+          if (data.specialty) {
+            setDoctorSpecialty(data.specialty);
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching doctor details:', error);
+      }
+    };
+    
+    if (doctorId && !doctorSpecialty) {
+      fetchDoctorDetails();
+    }
+  }, [doctorId, doctorSpecialty]);
+
 
   const specialties = [
     'Cardiology',
@@ -218,8 +241,9 @@ export default function DoctorPage() {
 
         {/* Dashboard Tabs */}
         <Tabs defaultValue="pending" className="w-full">
-          <TabsList className="grid w-full grid-cols-3 mb-8">
+          <TabsList className="grid w-full grid-cols-4 mb-8">
             <TabsTrigger value="pending">Pending Patients</TabsTrigger>
+            <TabsTrigger value="my-patients">My Patients</TabsTrigger>
             <TabsTrigger value="vital-signs">Vital Signs Review</TabsTrigger>
             <TabsTrigger value="help">Help</TabsTrigger>
           </TabsList>
@@ -227,6 +251,11 @@ export default function DoctorPage() {
           {/* Pending Patients Tab */}
           <TabsContent value="pending" className="space-y-4">
             <DoctorPendingPatients doctorId={doctorId} specialty={doctorSpecialty || undefined} />
+          </TabsContent>
+
+          {/* My Patients Tab */}
+          <TabsContent value="my-patients" className="space-y-4">
+            <DoctorApprovedPatients doctorId={doctorId} />
           </TabsContent>
 
           {/* Vital Signs Review Tab */}
